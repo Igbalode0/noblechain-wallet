@@ -269,8 +269,44 @@
             </form>
         </div>
     </section>
-
-    <script src="main.js"></script>
+<script>
+  // Initialize global nobleChain object if it doesn't exist
+  if (!window.nobleChain) {
+    const savedData = localStorage.getItem('nobleChain');
+    window.nobleChain = savedData ? JSON.parse(savedData) : {
+      users: [],
+      currentUser: null,
+      generateSecurityPhrase: function() {
+        // 12 random words (for demo purposes)
+        const words = ["apple","banana","cat","dog","echo","fish","grape","hat","ice","jungle","kite","lion"];
+        return words.sort(() => Math.random() - 0.5);
+      },
+      signup: function(email, password, username) {
+        const user = { email, password, username, wallets: [], transactions: [] };
+        this.users.push(user);
+        this.saveUsers();
+        return user;
+      },
+      login: function(email, password) {
+        const user = this.users.find(u => u.email === email && u.password === password);
+        if (!user) throw new Error('Invalid email or password');
+        this.currentUser = user;
+        this.saveSession();
+        return user;
+      },
+      confirmSecurityPhrase: function(original, selected) {
+        return original.join(' ') === selected.join(' ');
+      },
+      saveUsers: function() {
+        localStorage.setItem('nobleChain', JSON.stringify(this));
+      },
+      saveSession: function() {
+        localStorage.setItem('nobleChain_session', JSON.stringify(this.currentUser));
+      }
+    };
+  }
+</script>
+<script src="main.js"></script>
     <script>
         class AuthFlow {
             constructor() {
