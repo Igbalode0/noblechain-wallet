@@ -237,7 +237,8 @@ class NobleChain {
         window.location.href = 'index.html';
     }
 
-    generateSecurityPhrase() {
+   window.nobleChain = window.nobleChain || {};
+   window.noblechain.generateSecurityPhrase() {
         const words = [
             'abandon', 'ability', 'able', 'about', 'above', 'absent', 'absorb', 'abstract',
             'absurd', 'abuse', 'access', 'accident', 'account', 'accuse', 'achieve', 'acid',
@@ -298,12 +299,12 @@ class NobleChain {
             'crisis', 'crisp', 'criticize', 'crop', 'cross', 'crowd', 'crucial', 'cruel', 'cruise',
             'crumble', 'crunch', 'crusade', 'create', 'credible', 'credit', 'creek', 'creep', 'crew'
         ];
-        
-        const phrase = [];
+
+        let phrase = [];
         for (let i = 0; i < 12; i++) {
             phrase.push(words[Math.floor(Math.random() * words.length)]);
         }
-        return phrase;
+        return phrase.join(" ");
     }
 
     confirmSecurityPhrase(phrase, userSelections) {

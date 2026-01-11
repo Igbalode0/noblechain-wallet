@@ -5,18 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Noble Chain - Secure Digital Wallet</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/typed.js/2.0.12/typed.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; }
         .hero-bg { background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%); }
-        .card-shadow { box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        .form-input { transition: all 0.2s ease; }
-        .form-input:focus { border-color: #000000; box-shadow: 0 0 0 3px rgba(0,0,0,0.1); }
-        .phrase-word { transition: all 0.2s ease; }
-        .phrase-word:hover { transform: scale(1.05); }
-        .phrase-word.selected { background: #000000; color: #ffffff; }
         .hidden { display: none !important; }
         .slide-in { animation: slideIn 0.3s ease-out; }
         @keyframes slideIn {
@@ -26,625 +18,182 @@
     </style>
 </head>
 <body class="bg-white text-black min-h-screen">
-    <!-- Landing Section -->
-    <section id="landingSection" class="hero-bg min-h-screen flex flex-col justify-center items-center text-white px-4">
-        <div class="text-center max-w-sm mx-auto">
-            <div class="mb-8">
-                <div id="logoIcon" class="w-32 h-32 mx-auto mb-8 bg-white bg-opacity-10 rounded-full flex items-center justify-center cursor-pointer">
-                    <svg class="w-16 h-16 text-white" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4zM18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z"></path>
-                    </svg>
-                </div>
-                <h1 class="text-4xl font-bold mb-4">Noble Chain</h1>
-                <p class="text-gray-300 text-lg mb-8">Secure Digital Wallet Platform</p>
-            </div>
-            <div class="space-y-4">
-                <button onclick="showSignup()" class="w-full bg-white text-black py-4 rounded-2xl font-semibold text-lg">
-                    Create Wallet
-                </button>
-                <button onclick="showLogin()" class="w-full bg-transparent border-2 border-white text-white py-4 rounded-2xl font-semibold text-lg">
-                    Sign In
-                </button>
-            </div>
+
+<!-- Landing Section -->
+<section id="landingSection" class="hero-bg min-h-screen flex flex-col justify-center items-center text-white px-4">
+    <div class="text-center max-w-sm mx-auto">
+        <div id="logoIcon" class="w-32 h-32 mx-auto mb-8 bg-white bg-opacity-10 rounded-full flex items-center justify-center cursor-pointer">
+            <svg class="w-16 h-16 text-white" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4zM18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z"></path>
+            </svg>
         </div>
-    </section>
-
-    <!-- Signup Section -->
-    <section id="signupSection" class="hidden min-h-screen bg-white px-4 py-8">
-        <div class="max-w-sm mx-auto">
-            <div class="flex items-center mb-6">
-                <button onclick="showLanding()" class="p-2 -ml-2">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                    </svg>
-                </button>
-                <h1 class="text-2xl font-bold ml-4">Create Account</h1>
-            </div>
-            
-            <form id="signupForm" class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium mb-2">Email Address</label>
-                    <input type="email" id="signupEmail" required 
-                           class="w-full p-4 border border-gray-200 rounded-2xl form-input" 
-                           placeholder="Enter your email">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium mb-2">Username</label>
-                    <input type="text" id="signupUsername" required 
-                           class="w-full p-4 border border-gray-200 rounded-2xl form-input" 
-                           placeholder="Choose a username">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium mb-2">Password</label>
-                    <input type="password" id="signupPassword" required 
-                           class="w-full p-4 border border-gray-200 rounded-2xl form-input" 
-                           placeholder="Create a strong password">
-                </div>
-                <div class="pt-4">
-                    <button type="submit" class="w-full bg-black text-white py-4 rounded-2xl font-semibold text-lg">
-                        Continue
-                    </button>
-                </div>
-            </form>
-        </div>
-    </section>
-
-    <!-- Security Phrase Section -->
-    <section id="phraseSection" class="hidden min-h-screen bg-white px-4 py-8">
-        <div class="max-w-sm mx-auto">
-            <div class="text-center mb-6">
-                <div class="w-16 h-16 bg-black rounded-full mx-auto mb-4 flex items-center justify-center">
-                    <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path>
-                    </svg>
-                </div>
-                <h2 class="text-xl font-bold mb-2">Your Security Phrase</h2>
-                <p class="text-gray-600 text-sm">Write down these 12 words in order. This phrase secures your assets.</p>
-            </div>
-
-            <div class="bg-gray-50 rounded-2xl p-4 mb-6">
-                <div class="grid grid-cols-2 gap-3" id="phraseWords">
-                    <!-- Phrase words will be populated by JavaScript -->
-                </div>
-            </div>
-
-            <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6">
-                <div class="flex items-start space-x-3">
-                    <svg class="w-5 h-5 text-blue-600 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
-                    </svg>
-                    <div>
-                        <h3 class="font-semibold text-blue-900 text-sm">Never share your phrase</h3>
-                        <p class="text-blue-800 text-xs mt-1">Store it securely offline. Never share with anyone, including Noble Chain support.</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="flex space-x-3">
-                <button onclick="downloadPhrase()" class="flex-1 bg-gray-100 text-black py-3 rounded-xl font-semibold">
-                    Download
-                </button>
-                <button onclick="authFlow.confirmPhraseSetup()" class="flex-1 bg-black text-white py-3 rounded-xl font-semibold">
-                    I've Saved It
-                </button>
-            </div>
-        </div>
-    </section>
-
-    <!-- Confirm Phrase Section -->
-    <section id="confirmSection" class="hidden min-h-screen bg-white px-4 py-8">
-        <div class="max-w-sm mx-auto">
-            <div class="text-center mb-6">
-                <div class="w-16 h-16 bg-black rounded-full mx-auto mb-4 flex items-center justify-center">
-                    <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                    </svg>
-                </div>
-                <h2 class="text-xl font-bold mb-2">Confirm Your Phrase</h2>
-                <p class="text-gray-600 text-sm">Tap the words in the correct order to verify your phrase.</p>
-            </div>
-
-            <div class="bg-gray-50 rounded-2xl p-4 mb-6">
-                <div class="text-center mb-4">
-                    <span class="text-sm font-medium">Word </span>
-                    <span id="currentWordIndex" class="text-sm font-bold">1</span>
-                    <span class="text-sm font-medium"> of 12</span>
-                </div>
-                <div class="flex flex-wrap gap-2 justify-center mb-4" id="selectedWords">
-                    <!-- Selected words will appear here -->
-                </div>
-            </div>
-
-            <div class="grid grid-cols-3 gap-2 mb-6" id="wordOptions">
-                <!-- Word options will be populated by JavaScript -->
-            </div>
-
-            <button id="confirmButton" onclick="authFlow.completeConfirmation()" disabled 
-                    class="w-full bg-black text-white py-4 rounded-2xl font-semibold text-lg opacity-50">
-                Select All 12 Words
+        <h1 class="text-4xl font-bold mb-4">Noble Chain</h1>
+        <p class="text-gray-300 text-lg mb-8">Secure Digital Wallet Platform</p>
+        <div class="space-y-4">
+            <button onclick="showSection('signupSection')" class="w-full bg-white text-black py-4 rounded-2xl font-semibold text-lg">
+                Create Wallet
+            </button>
+            <button onclick="showSection('loginSection')" class="w-full bg-transparent border-2 border-white text-white py-4 rounded-2xl font-semibold text-lg">
+                Sign In
             </button>
         </div>
-    </section>
+    </div>
+</section>
 
-    <!-- Login Section -->
-    <section id="loginSection" class="hidden min-h-screen bg-white px-4 py-8">
-        <div class="max-w-sm mx-auto">
-            <div class="flex items-center mb-6">
-                <button onclick="showLanding()" class="p-2 -ml-2">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                    </svg>
-                </button>
-                <h1 class="text-2xl font-bold ml-4">Welcome Back</h1>
-            </div>
-            
-            <form id="loginForm" class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium mb-2">Email Address</label>
-                    <input type="email" id="loginEmail" required 
-                           class="w-full p-4 border border-gray-200 rounded-2xl form-input" 
-                           placeholder="Enter your email">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium mb-2">Password</label>
-                    <input type="password" id="loginPassword" required 
-                           class="w-full p-4 border border-gray-200 rounded-2xl form-input" 
-                           placeholder="Enter your password">
-                </div>
-                <div class="flex justify-between items-center">
-                    <button type="button" onclick="showRecovery()" class="text-sm text-blue-600">
-                        Use Recovery Phrase
-                    </button>
-                    <button type="button" onclick="showPasswordReset()" class="text-sm text-blue-600">
-                        Forgot Password?
-                    </button>
-                </div>
-                <div class="pt-4">
-                    <button type="submit" class="w-full bg-black text-white py-4 rounded-2xl font-semibold text-lg">
-                        Sign In
-                    </button>
-                </div>
-            </form>
+<!-- Signup Section -->
+<section id="signupSection" class="hidden min-h-screen bg-white px-4 py-8">
+    <div class="max-w-sm mx-auto">
+        <div class="flex items-center mb-6">
+            <button onclick="showSection('landingSection')" class="p-2 -ml-2">
+                Back
+            </button>
+            <h1 class="text-2xl font-bold ml-4">Create Account</h1>
         </div>
-    </section>
+        <form id="signupForm" class="space-y-4">
+            <input type="email" id="signupEmail" placeholder="Email" class="w-full p-4 border rounded-2xl">
+            <input type="text" id="signupUsername" placeholder="Username" class="w-full p-4 border rounded-2xl">
+            <input type="password" id="signupPassword" placeholder="Password" class="w-full p-4 border rounded-2xl">
+            <button type="submit" class="w-full bg-black text-white py-4 rounded-2xl font-semibold text-lg">Continue</button>
+        </form>
+    </div>
+</section>
 
-    <!-- Password Reset Section -->
-    <section id="resetSection" class="hidden min-h-screen bg-white px-4 py-8">
-        <div class="max-w-sm mx-auto">
-            <div class="flex items-center mb-6">
-                <button onclick="showLogin()" class="p-2 -ml-2">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                    </svg>
-                </button>
-                <h1 class="text-2xl font-bold ml-4">Reset Password</h1>
-            </div>
-            
-            <form id="resetForm" class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium mb-2">Email Address</label>
-                    <input type="email" id="resetEmail" required 
-                           class="w-full p-4 border border-gray-200 rounded-2xl form-input" 
-                           placeholder="Enter your email">
-                </div>
-                <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
-                    <p class="text-sm text-blue-800">Password reset instructions will be sent to your email address.</p>
-                </div>
-                <div class="pt-4">
-                    <button type="submit" class="w-full bg-black text-white py-4 rounded-2xl font-semibold text-lg">
-                        Send Reset Link
-                    </button>
-                </div>
-            </form>
+<!-- Login Section -->
+<section id="loginSection" class="hidden min-h-screen bg-white px-4 py-8">
+    <div class="max-w-sm mx-auto">
+        <div class="flex items-center mb-6">
+            <button onclick="showSection('landingSection')" class="p-2 -ml-2">Back</button>
+            <h1 class="text-2xl font-bold ml-4">Welcome Back</h1>
         </div>
-    </section>
+        <form id="loginForm" class="space-y-4">
+            <input type="email" id="loginEmail" placeholder="Email" class="w-full p-4 border rounded-2xl">
+            <input type="password" id="loginPassword" placeholder="Password" class="w-full p-4 border rounded-2xl">
+            <button type="submit" class="w-full bg-black text-white py-4 rounded-2xl font-semibold text-lg">Sign In</button>
+        </form>
+    </div>
+</section>
 
-    <!-- Recovery Section -->
-    <section id="recoverySection" class="hidden min-h-screen bg-white px-4 py-8">
-        <div class="max-w-sm mx-auto">
-            <div class="flex items-center mb-6">
-                <button onclick="showLogin()" class="p-2 -ml-2">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-                    </svg>
-                </button>
-                <h1 class="text-2xl font-bold ml-4">Wallet Recovery</h1>
-            </div>
-            
-            <form id="recoveryForm" class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium mb-2">Recovery Phrase</label>
-                    <textarea id="recoveryPhrase" rows="3" required 
-                              class="w-full p-4 border border-gray-200 rounded-2xl form-input resize-none" 
-                              placeholder="Enter your 12-word recovery phrase"></textarea>
-                </div>
-                <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-4">
-                    <p class="text-sm text-yellow-800">This will restore your wallet access using your 12-word recovery phrase.</p>
-                </div>
-                <div class="pt-4">
-                    <button type="submit" class="w-full bg-black text-white py-4 rounded-2xl font-semibold text-lg">
-                        Recover Wallet
-                    </button>
-                </div>
-            </form>
-        </div>
-    </section>
-<script>
-  // Initialize global nobleChain object if it doesn't exist
-  if (!window.nobleChain) {
-    const savedData = localStorage.getItem('nobleChain');
-    window.nobleChain = savedData ? JSON.parse(savedData) : {
-      users: [],
-      currentUser: null,
-      generateSecurityPhrase: function() {
-        // 12 random words (for demo purposes)
-        const words = ["apple","banana","cat","dog","echo","fish","grape","hat","ice","jungle","kite","lion"];
-        return words.sort(() => Math.random() - 0.5);
-      },
-      signup: function(email, password, username) {
-        const user = { email, password, username, wallets: [], transactions: [] };
-        this.users.push(user);
-        this.saveUsers();
-        return user;
-      },
-      login: function(email, password) {
-        const user = this.users.find(u => u.email === email && u.password === password);
-        if (!user) throw new Error('Invalid email or password');
-        this.currentUser = user;
-        this.saveSession();
-        return user;
-      },
-      confirmSecurityPhrase: function(original, selected) {
-        return original.join(' ') === selected.join(' ');
-      },
-      saveUsers: function() {
-        localStorage.setItem('nobleChain', JSON.stringify(this));
-      },
-      saveSession: function() {
-        localStorage.setItem('nobleChain_session', JSON.stringify(this.currentUser));
+<script type="module">
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+  // Replace these placeholders with your Supabase values
+  const SUPABASE_URL = 'https://hslfrufymvfwluctmsdg.supabase.co'
+  const SUPABASE_ANON_KEY = 'process.env.SUPABASE_KEY'
+
+  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+
+  // Minimal nobleChain object (kept for compatibility)
+  window.nobleChain = {
+      adminUsers: [{ username: "admin", password: "noblechain2024" }],
+      login: function(email, password){ alert('Demo login not implemented.'); },
+  };
+
+  // Admin login function (standalone)
+  function showAdminLogin() {
+      const username = prompt('Enter admin username:');
+      if (username === 'admin') {
+          const password = prompt('Enter admin password:');
+          if (password === 'noblechain2024') {
+              localStorage.setItem('noblechain_admin_session', JSON.stringify({ adminId: 'admin', loginTime: Date.now() }));
+              alert('Admin login successful!');
+              window.location.href = 'admin.html';
+          } else {
+              alert('Invalid admin credentials');
+          }
+      } else {
+          alert('Invalid admin credentials');
       }
-    };
   }
+
+  // Triple-click on logo to open admin login
+  const logo = document.getElementById('logoIcon');
+  let clickCount = 0;
+  logo.addEventListener('click', () => {
+      clickCount++;
+      setTimeout(() => {
+          if (clickCount >= 3) {
+              showAdminLogin();
+              clickCount = 0;
+          }
+      }, 500);
+      setTimeout(() => clickCount = 0, 1000);
+  });
+
+  // Section switching
+  function showSection(sectionId) {
+      ['landingSection','signupSection','loginSection'].forEach(id => {
+          document.getElementById(id).classList.add('hidden');
+      });
+      document.getElementById(sectionId).classList.remove('hidden');
+  }
+
+  // Signup handler using Supabase
+  async function handleSignup(email, password, username) {
+      try {
+          const { data, error } = await supabase.auth.signUp({
+              email,
+              password,
+              options: { data: { username } }
+          })
+
+          if (error) {
+              alert('Signup error: ' + error.message)
+              return
+          }
+
+          // If Supabase returns a user/session, consider signup successful
+          alert('Signup successful. Redirecting to dashboard...')
+          window.location.href = 'dashboard.html'
+      } catch (err) {
+          alert('Signup failed: ' + err.message)
+      }
+  }
+
+  // Login handler using Supabase
+  async function handleLogin(email, password) {
+      try {
+          const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+
+          if (error) {
+              alert('Login error: ' + error.message)
+              return
+          }
+
+          alert('Login successful. Redirecting to dashboard...')
+          window.location.href = 'dashboard.html'
+      } catch (err) {
+          alert('Login failed: ' + err.message)
+      }
+  }
+
+  // Wire existing forms to Supabase handlers
+  document.getElementById('signupForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const email = document.getElementById('signupEmail').value.trim();
+      const password = document.getElementById('signupPassword').value;
+      const username = document.getElementById('signupUsername').value.trim();
+
+      if (!email || !password) {
+          alert('Please provide an email and password.');
+          return;
+      }
+
+      handleSignup(email, password, username);
+  });
+
+  document.getElementById('loginForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
+
+      if (!email || !password) {
+          alert('Please provide an email and password.');
+          return;
+      }
+
+      handleLogin(email, password);
+  });
 </script>
-<script src="main.js"></script>
-    <script>
-        class AuthFlow {
-            constructor() {
-                this.currentPhrase = [];
-                this.selectedWords = [];
-                this.currentWordIndex = 0;
-                this.tempUser = null;
-                this.init();
-            }
 
-            init() {
-                this.bindEvents();
-                this.checkTripleClick();
-            }
-
-            bindEvents() {
-                // Signup form
-                document.getElementById('signupForm').addEventListener('submit', (e) => {
-                    e.preventDefault();
-                    this.handleSignup();
-                });
-
-                // Login form
-                document.getElementById('loginForm').addEventListener('submit', (e) => {
-                    e.preventDefault();
-                    this.handleLogin();
-                });
-
-                // Reset form
-                document.getElementById('resetForm').addEventListener('submit', (e) => {
-                    e.preventDefault();
-                    this.handlePasswordReset();
-                });
-
-                // Recovery form
-                document.getElementById('recoveryForm').addEventListener('submit', (e) => {
-                    e.preventDefault();
-                    this.handleRecovery();
-                });
-            }
-
-            checkTripleClick() {
-                let clickCount = 0;
-                const logo = document.getElementById('logoIcon');
-                
-                logo.addEventListener('click', () => {
-                    clickCount++;
-                    setTimeout(() => {
-                        if (clickCount >= 3) {
-                            this.showAdminLogin();
-                            clickCount = 0;
-                        }
-                    }, 500);
-                    setTimeout(() => {
-                        clickCount = 0;
-                    }, 1000);
-                });
-            }
-
-            handleSignup() {
-                const email = document.getElementById('signupEmail').value;
-                const username = document.getElementById('signupUsername').value;
-                const password = document.getElementById('signupPassword').value;
-
-                try {
-                    // Check if user already exists
-                    if (window.nobleChain.users.find(u => u.email === email)) {
-                        throw new Error('Email already registered');
-                    }
-                    if (window.nobleChain.users.find(u => u.username === username)) {
-                        throw new Error('Username already taken');
-                    }
-
-                    this.tempUser = { email, username, password };
-                    this.generateSecurityPhrase();
-                    this.showSection('phraseSection');
-                } catch (error) {
-                    alert(error.message);
-                }
-            }
-
-            handleLogin() {
-                const email = document.getElementById('loginEmail').value;
-                const password = document.getElementById('loginPassword').value;
-
-                try {
-                    window.nobleChain.login(email, password);
-                    window.location.href = 'dashboard.html';
-                } catch (error) {
-                    alert(error.message);
-                }
-            }
-
-            handlePasswordReset() {
-                const email = document.getElementById('resetEmail').value;
-                alert('Password reset link sent to ' + email);
-                this.showSection('loginSection');
-            }
-
-            handleRecovery() {
-                const phrase = document.getElementById('recoveryPhrase').value.trim();
-                const words = phrase.split(/\s+/);
-                
-                if (words.length !== 12) {
-                    alert('Please enter exactly 12 words');
-                    return;
-                }
-
-                // In a real app, this would verify the phrase against stored hashes
-                alert('Wallet recovery not implemented in demo. Please use signup instead.');
-            }
-
-            showAdminLogin() {
-                // This function is called from triple-click on logo
-                const username = prompt('Enter admin username:');
-                if (username === 'admin') {
-                    const password = prompt('Enter admin password:');
-                    if (password === 'noblechain2024') {
-                        // Create admin session
-                        const adminSession = {
-                            adminId: 'admin',
-                            loginTime: Date.now(),
-                            ipAddress: 'landing_page_access'
-                        };
-                        localStorage.setItem('noblechain_admin_session', JSON.stringify(adminSession));
-                        
-                        // Log successful admin access
-                        const adminLogs = JSON.parse(localStorage.getItem('noblechain_admin_logs') || '[]');
-                        adminLogs.push({
-                            id: Date.now().toString(36) + Math.random().toString(36).substr(2),
-                            action: 'admin_access',
-                            details: {
-                                username: username,
-                                success: true,
-                                ipAddress: 'landing_page_access',
-                                timestamp: Date.now()
-                            }
-                        });
-                        localStorage.setItem('noblechain_admin_logs', JSON.stringify(adminLogs));
-                        
-                        // Navigate to admin dashboard
-                        window.location.href = 'admin.html';
-                    } else {
-                        // Log failed admin login attempt
-                        const adminLogs = JSON.parse(localStorage.getItem('noblechain_admin_logs') || '[]');
-                        adminLogs.push({
-                            id: Date.now().toString(36) + Math.random().toString(36).substr(2),
-                            action: 'admin_access_attempt',
-                            details: {
-                                username: username,
-                                success: false,
-                                ipAddress: 'landing_page_access',
-                                timestamp: Date.now()
-                            }
-                        });
-                        localStorage.setItem('noblechain_admin_logs', JSON.stringify(adminLogs));
-                        
-                        alert('Invalid admin credentials');
-                    }
-                } else if (username) {
-                    // Log failed admin login attempt
-                    const adminLogs = JSON.parse(localStorage.getItem('noblechain_admin_logs') || '[]');
-                    adminLogs.push({
-                        id: Date.now().toString(36) + Math.random().toString(36).substr(2),
-                        action: 'admin_access_attempt',
-                        details: {
-                            username: username,
-                            success: false,
-                            ipAddress: 'landing_page_access',
-                            timestamp: Date.now()
-                        }
-                    });
-                    localStorage.setItem('noblechain_admin_logs', JSON.stringify(adminLogs));
-                    
-                    alert('Invalid admin credentials');
-                }
-            }
-
-            generateSecurityPhrase() {
-                this.currentPhrase = window.nobleChain.generateSecurityPhrase();
-                const container = document.getElementById('phraseWords');
-                
-                container.innerHTML = this.currentPhrase.map((word, index) => `
-                    <div class="bg-gray-100 p-3 rounded-xl text-center">
-                        <div class="text-xs text-gray-500 mb-1">${index + 1}</div>
-                        <div class="font-semibold text-sm">${word}</div>
-                    </div>
-                `).join('');
-            }
-
-            confirmPhraseSetup() {
-                this.setupConfirmation();
-                this.showSection('confirmSection');
-            }
-
-            setupConfirmation() {
-                this.selectedWords = [];
-                this.currentWordIndex = 0;
-                this.updateWordOptions();
-                this.updateSelectedWords();
-            }
-
-            updateWordOptions() {
-                const container = document.getElementById('wordOptions');
-                const correctWord = this.currentPhrase[this.currentWordIndex];
-                
-                // Generate random words plus the correct one
-                const options = [correctWord];
-                while (options.length < 9) {
-                    const randomWord = window.nobleChain.generateSecurityPhrase()[0];
-                    if (!options.includes(randomWord)) {
-                        options.push(randomWord);
-                    }
-                }
-                
-                // Shuffle options
-                options.sort(() => Math.random() - 0.5);
-                
-                container.innerHTML = options.map(word => `
-                    <button type="button" onclick="authFlow.selectWord('${word}')" 
-                            class="phrase-word bg-gray-100 p-3 rounded-xl text-sm font-medium">
-                        ${word}
-                    </button>
-                `).join('');
-                
-                document.getElementById('currentWordIndex').textContent = this.currentWordIndex + 1;
-            }
-
-            selectWord(word) {
-                this.selectedWords.push(word);
-                this.currentWordIndex++;
-                this.updateSelectedWords();
-                
-                if (this.currentWordIndex < 12) {
-                    this.updateWordOptions();
-                } else {
-                    // All 12 words selected, enable the confirmation button
-                    const confirmBtn = document.getElementById('confirmButton');
-                    confirmBtn.disabled = false;
-                    confirmBtn.textContent = 'Complete Setup';
-                    confirmBtn.classList.remove('opacity-50');
-                }
-            }
-
-            updateSelectedWords() {
-                const container = document.getElementById('selectedWords');
-                container.innerHTML = this.selectedWords.map((word, index) => `
-                    <span class="bg-black text-white px-3 py-1 rounded-full text-sm">
-                        ${index + 1}. ${word}
-                    </span>
-                `).join('');
-            }
-
-            completeConfirmation() {
-                // Check if all 12 words have been selected
-                if (this.selectedWords.length !== 12) {
-                    alert('Please complete the phrase confirmation by selecting all 12 words.');
-                    return;
-                }
-                
-                const isCorrect = window.nobleChain.confirmSecurityPhrase(this.currentPhrase, this.selectedWords);
-                
-                if (isCorrect) {
-                    // Complete signup
-                    const user = window.nobleChain.signup(this.tempUser.email, this.tempUser.password, this.tempUser.username);
-                    
-                    // Store security phrase hash (simplified for demo)
-                    const phraseHash = btoa(this.currentPhrase.join(' '));
-                    user.securityPhraseHash = phraseHash;
-                    window.nobleChain.saveUsers();
-                    
-                    window.nobleChain.currentUser = user;
-                    window.nobleChain.saveSession();
-                    
-                    alert('Account created successfully! Welcome to Noble Chain.');
-                    window.location.href = 'dashboard.html';
-                } else {
-                    alert('Incorrect word order. Please try again.');
-                    this.setupConfirmation();
-                }
-            }
-
-            showSection(sectionId) {
-                // Hide all sections
-                ['landingSection', 'signupSection', 'phraseSection', 'confirmSection', 'loginSection', 'resetSection', 'recoverySection'].forEach(id => {
-                    document.getElementById(id).classList.add('hidden');
-                });
-                
-                // Show target section with animation
-                const targetSection = document.getElementById(sectionId);
-                targetSection.classList.remove('hidden');
-                targetSection.classList.add('slide-in');
-                
-                // Remove animation class after animation completes
-                setTimeout(() => {
-                    targetSection.classList.remove('slide-in');
-                }, 300);
-            }
-        }
-
-        // Global functions for navigation
-        function showLanding() {
-            authFlow.showSection('landingSection');
-        }
-
-        function showSignup() {
-            authFlow.showSection('signupSection');
-        }
-
-        function showLogin() {
-            authFlow.showSection('loginSection');
-        }
-
-        function showPasswordReset() {
-            authFlow.showSection('resetSection');
-        }
-
-        function showRecovery() {
-            authFlow.showSection('recoverySection');
-        }
-
-        function downloadPhrase() {
-            const phrase = authFlow.currentPhrase.join(' ');
-            const blob = new Blob([`Noble Chain Recovery Phrase\n\n${phrase}\n\nNever share this phrase with anyone. Store it securely offline.`], 
-                                { type: 'text/plain' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'noble-chain-recovery-phrase.txt';
-            a.click();
-            URL.revokeObjectURL(url);
-        }
-
-        // Initialize auth flow
-        let authFlow;
-        document.addEventListener('DOMContentLoaded', () => {
-            authFlow = new AuthFlow();
-        });
-    </script>
 </body>
 </html>
