@@ -4,10 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Noble Chain - Admin Console</title>
-    <script src="nobleChain.js"></script>
-<script src="admin.js"></script>
-
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Using CDN for rapid local/dev preview. Replace with built CSS for production. -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { font-family: 'Inter', sans-serif; }
         .card-shadow { box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
@@ -46,16 +45,16 @@
         <!-- Tab Navigation -->
         <div class="bg-white rounded-2xl p-4 mb-6 card-shadow">
             <div class="flex space-x-2 overflow-x-auto">
-                <button onclick="switchTab('users')" class="tab-btn active px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap">
+                <button onclick="switchTab(event,'users')" class="tab-btn active px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap">
                     Users
                 </button>
-                <button onclick="switchTab('transactions')" class="tab-btn px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap bg-gray-100">
+                <button onclick="switchTab(event,'transactions')" class="tab-btn px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap bg-gray-100">
                     Transactions
                 </button>
-                <button onclick="switchTab('support')" class="tab-btn px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap bg-gray-100">
+                <button onclick="switchTab(event,'support')" class="tab-btn px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap bg-gray-100">
                     Support Chats
                 </button>
-                <button onclick="switchTab('logs')" class="tab-btn px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap bg-gray-100">
+                <button onclick="switchTab(event,'logs')" class="tab-btn px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap bg-gray-100">
                     Admin Logs
                 </button>
             </div>
@@ -222,6 +221,7 @@
             }
 
             init() {
+                console.log('AdminConsole.init() starting');
                 // Check if admin is logged in
                 const adminSession = localStorage.getItem('noblechain_admin_session');
                 if (!adminSession) {
@@ -839,6 +839,7 @@
             }
 
             bindEvents() {
+                console.log('AdminConsole.bindEvents()');
                 // User search
                 document.getElementById('userSearch').addEventListener('input', (e) => {
                     // Simple search implementation
@@ -860,16 +861,22 @@
         }
 
         // Global functions
-        function switchTab(tabName) {
+        function switchTab(evt, tabName) {
+            console.log('switchTab called', tabName, evt);
             adminConsole.currentTab = tabName;
-            
+
             // Update tab buttons
             document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.classList.remove('active');
                 btn.classList.add('bg-gray-100');
             });
-            event.target.classList.add('active');
-            event.target.classList.remove('bg-gray-100');
+            if (evt && evt.currentTarget) {
+                evt.currentTarget.classList.add('active');
+                evt.currentTarget.classList.remove('bg-gray-100');
+            } else if (evt && evt.target) {
+                evt.target.classList.add('active');
+                evt.target.classList.remove('bg-gray-100');
+            }
             
             // Show/hide tab content
             document.querySelectorAll('.tab-content').forEach(content => {
@@ -918,10 +925,10 @@
             document.getElementById('balanceModal').classList.add('hidden');
         }
 
-        // Initialize Admin Console
-        let adminConsole;
+        // Initialize Admin Console (exposed on window for inline handlers)
+        window.adminConsole = null;
         document.addEventListener('DOMContentLoaded', () => {
-            adminConsole = new AdminConsole();
+            window.adminConsole = new AdminConsole();
         });
     </script>
 </body>

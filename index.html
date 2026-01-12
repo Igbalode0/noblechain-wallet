@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Noble Chain - Secure Digital Wallet</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="nobleChain.js"></script>
-    <script src="admin.js"></script>
+    <!-- Load main application shim (replaces missing nobleChain.js/admin.js) -->
+    <script src="main.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; }
@@ -376,13 +376,17 @@
     // Congratulations modal handlers
     // Add modal HTML to the page
     const congratsHtml = `
-        <div id="congratsModal" class="fixed inset-0 bg-black bg-opacity-60 z-50 hidden flex items-center justify-center">
-            <div class="bg-white rounded-2xl p-6 max-w-sm text-center">
-                <h2 class="text-2xl font-bold mb-2">Congratulations!</h2>
-                <p class="text-gray-600 mb-4">Your wallet has been created and secured. Welcome to Noble Chain.</p>
+        <div id="congratsModal" class="fixed inset-0 bg-black bg-opacity-70 z-50 hidden flex items-center justify-center px-4">
+            <div class="bg-gradient-to-br from-yellow-50 to-white shadow-2xl rounded-3xl p-6 max-w-md text-center border border-yellow-100">
+                <div class="inline-block bg-yellow-200 p-4 rounded-full mb-4 shadow-lg">
+                    <svg class="w-8 h-8 text-yellow-700" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.97a1 1 0 00.95.69h4.178c.969 0 1.371 1.24.588 1.81l-3.385 2.46a1 1 0 00-.364 1.118l1.287 3.97c.3.922-.755 1.688-1.538 1.118l-3.385-2.46a1 1 0 00-1.176 0l-3.385 2.46c-.783.57-1.838-.196-1.538-1.118l1.287-3.97a1 1 0 00-.364-1.118L2.047 9.397c-.783-.57-.38-1.81.588-1.81h4.178a1 1 0 00.95-.69l1.286-3.97z"/></svg>
+                </div>
+                <h2 class="text-2xl font-extrabold mb-2">Congratulations, Royal!</h2>
+                <p class="text-gray-700 mb-3">Your wallet is live — built for royalty. Keep your recovery phrase secure; it is the key to your kingdom.</p>
+                <p class="text-sm text-gray-500 mb-6">A welcome message has been added to your Notifications.</p>
                 <div class="flex space-x-2">
-                    <button id="congratsClose" class="flex-1 bg-gray-100 py-3 rounded-2xl">Close</button>
-                    <button id="congratsContinue" class="flex-1 bg-black text-white py-3 rounded-2xl">Continue to Dashboard</button>
+                    <button id="congratsClose" class="flex-1 bg-white border border-gray-200 py-3 rounded-2xl font-semibold">Close</button>
+                    <button id="congratsContinue" class="flex-1 bg-yellow-600 text-white py-3 rounded-2xl font-bold">Proceed to Dashboard</button>
                 </div>
             </div>
         </div>`;
