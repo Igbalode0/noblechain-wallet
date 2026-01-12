@@ -539,7 +539,29 @@ class NobleChain {
         
         this.transactions.push(tx);
         this.saveTransactions();
+        // Add a user notification for this transaction
+        try {
+            const title = `Transaction: ${type.replace(/_/g,' ')}`;
+            const body = `${type === 'receive' || type === 'add_money' ? 'Received' : (type === 'send' ? 'Sent' : type)} ${amount} ${asset}${counterparty ? ' — ' + counterparty : ''}`;
+            this.addNotification(title, body, 'transaction');
+        } catch (e) { console.warn('Notification add failed', e); }
         return tx;
+    }
+
+    addNotification(title, message, type = 'info') {
+        try {
+            const note = { id: this.generateId(), title, message, type, timestamp: Date.now(), read: false };
+            const list = JSON.parse(localStorage.getItem('noblechain_notifications') || '[]');
+            list.unshift(note);
+            // keep last 100
+            if (list.length > 100) list.splice(100);
+            localStorage.setItem('noblechain_notifications', JSON.stringify(list));
+            document.dispatchEvent(new CustomEvent('noblechain:notification', { detail: note }));
+            return note;
+        } catch (e) {
+            console.warn('Failed to store notification', e);
+            return null;
+        }
     }
 
     // ==================== MARKET DATA ====================
@@ -732,6 +754,17 @@ class NobleChain {
         // Trigger UI updates across components
         document.dispatchEvent(new CustomEvent('noblechain:update'));
     }
+
+}
+
+// Instantiate the app and expose it globally so UI pages can interact
+try {
+    if (!window.nobleChain || !(window.nobleChain instanceof NobleChain)) {
+        window.nobleChain = new NobleChain();
+    }
+} catch (e) {
+    console.error('Failed to initialize NobleChain app', e);
+}
 
     // ==================== EMAIL NOTIFICATIONS ====================
 

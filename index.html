@@ -354,10 +354,49 @@
       // clean up temp
       sessionStorage.removeItem('noblechain_temp_phrase');
       sessionStorage.removeItem('noblechain_temp_indices');
-      // keep username saved in localStorage and go to dashboard
-      window.location.href = 'dashboard.html';
+
+      // add a welcome notification to localStorage
+      try {
+          const username = localStorage.getItem('noblechain_current_username') || (window.nobleChain && window.nobleChain.currentUser && window.nobleChain.currentUser.username) || 'User';
+          const note = { id: 'note_' + Date.now().toString(36), title: 'Welcome to Noble Chain', message: `Welcome ${username}! Your wallet is ready. Keep your recovery phrase safe.`, type: 'welcome', timestamp: Date.now(), read: false };
+          const notes = JSON.parse(localStorage.getItem('noblechain_notifications') || '[]');
+          notes.unshift(note);
+          localStorage.setItem('noblechain_notifications', JSON.stringify(notes));
+      } catch (err) { console.warn('Failed to store welcome notification', err); }
+
+      // show congratulations modal before redirect
+      const modal = document.getElementById('congratsModal');
+      if (modal) {
+          modal.classList.remove('hidden');
+      } else {
+          window.location.href = 'dashboard.html';
+      }
   });
+
+    // Congratulations modal handlers
+    // Add modal HTML to the page
+    const congratsHtml = `
+        <div id="congratsModal" class="fixed inset-0 bg-black bg-opacity-60 z-50 hidden flex items-center justify-center">
+            <div class="bg-white rounded-2xl p-6 max-w-sm text-center">
+                <h2 class="text-2xl font-bold mb-2">Congratulations!</h2>
+                <p class="text-gray-600 mb-4">Your wallet has been created and secured. Welcome to Noble Chain.</p>
+                <div class="flex space-x-2">
+                    <button id="congratsClose" class="flex-1 bg-gray-100 py-3 rounded-2xl">Close</button>
+                    <button id="congratsContinue" class="flex-1 bg-black text-white py-3 rounded-2xl">Continue to Dashboard</button>
+                </div>
+            </div>
+        </div>`;
+
+    document.body.insertAdjacentHTML('beforeend', congratsHtml);
+    document.getElementById('congratsClose').addEventListener('click', () => {
+            document.getElementById('congratsModal').classList.add('hidden');
+    });
+    document.getElementById('congratsContinue').addEventListener('click', () => {
+            document.getElementById('congratsModal').classList.add('hidden');
+            window.location.href = 'dashboard.html';
+    });
 </script>
 
 </body>
 </html>
+
