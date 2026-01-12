@@ -105,6 +105,48 @@ class NobleChain {
     // Support
     sendSupportMessage(message,isAdmin=false,senderType='user'){ const c={id:this.generateId(),userId:this.currentUser?.id||'admin',message,isAdmin,senderType,timestamp:Date.now()}; this.supportChats.push(c); this.saveSupportChats(); return c; }
     getSupportChats(userId=null){ return userId? this.supportChats.filter(c=>c.userId===userId): this.supportChats; }
+
+    // Simple AI-like response generator for demo chat; synchronous and lightweight
+    generateAIResponse(userMessage){
+        if(!userMessage) return "Thanks for reaching out — we'll get back to you shortly.";
+        const msg = String(userMessage).toLowerCase();
+        if(msg.includes('balance')) return "You can view your balances on the dashboard. If something looks wrong, contact support with details.";
+        if(msg.includes('send') || msg.includes('transfer')) return "To send funds, open Send Money from your dashboard and enter the recipient's username and amount.";
+        if(msg.includes('fees')) return "Our platform charges minimal network fees for crypto transfers; internal USD transfers are instant and fee-free in this demo.";
+        return "Thanks for your message. A support agent will reply soon. For quick help, include your username and a short description.";
+    }
+
+    // Simple internal sendMoney implementation for demo purposes
+    sendMoney(recipientUsername, amount){
+        if(!this.currentUser) throw new Error('Not signed in');
+        const amt = Number(amount);
+        if(isNaN(amt) || amt <= 0) throw new Error('Invalid amount');
+        const senderId = this.currentUser.id;
+        const recipient = this.users.find(u=>u.username===recipientUsername);
+        if(!recipient) throw new Error('Recipient not found');
+
+        const senderWallet = this.getWallet(senderId) || { dollarBalance:0, assets:{} };
+        const recipientWallet = this.getWallet(recipient.id) || { dollarBalance:0, assets:{} };
+
+        if((senderWallet.dollarBalance || 0) < amt) throw new Error('Insufficient balance');
+
+        senderWallet.dollarBalance = (senderWallet.dollarBalance || 0) - amt;
+        recipientWallet.dollarBalance = (recipientWallet.dollarBalance || 0) + amt;
+
+        this.wallets[senderId] = senderWallet;
+        this.wallets[recipient.id] = recipientWallet;
+        this.saveWallets();
+
+        const txOut = this.createTransaction('send','USD',amt,recipientUsername,senderId,{direction:'outgoing'});
+        const txIn = this.createTransaction('receive','USD',amt,this.currentUser.username,recipient.id,{direction:'incoming'});
+
+        this.addNotification('Transfer Sent', `You sent $${amt} to ${recipientUsername}`, 'transaction');
+        this.addNotification('Transfer Received', `${this.currentUser.username} sent you $${amt}`, 'transaction');
+
+        // dispatch update events so UI can refresh
+        document.dispatchEvent(new CustomEvent('noblechain:update'));
+        return { txOut, txIn };
+    }
     getEmailSubject(type) {
         const subjects = {
             login_success: 'Successful Login to Noble Chain',

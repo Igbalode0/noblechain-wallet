@@ -272,7 +272,9 @@
             }
 
             init() {
-                if (!window.nobleChain.currentUser) {
+                console.log('Dashboard.init()');
+                if (!window.nobleChain || !window.nobleChain.currentUser) {
+                    console.warn('No nobleChain session found; redirecting to index');
                     window.location.href = 'index.html';
                     return;
                 }
@@ -287,20 +289,29 @@
             }
 
             updateDashboard() {
-                const user = window.nobleChain.currentUser;
-                const wallet = window.nobleChain.getWallet();
-                
-                // Update user info
-                document.getElementById('username').textContent = user.username;
-                
-                // Update balances
-                const totalBalance = window.nobleChain.getTotalBalance();
-                const dollarBalance = wallet.dollarBalance;
-                
-                document.getElementById('totalBalance').textContent = 
-                    window.nobleChain.formatCurrency(totalBalance);
-                document.getElementById('dollarBalance').textContent = 
-                    window.nobleChain.formatCurrency(dollarBalance);
+                try {
+                    const user = window.nobleChain.currentUser;
+                    let wallet = null;
+                    try { wallet = window.nobleChain.getWallet(); } catch (e) { wallet = null; }
+
+                    // Ensure wallet exists to avoid crashes
+                    if (!wallet) {
+                        console.warn('No wallet found for current user, using empty wallet fallback');
+                        wallet = { dollarBalance: 0, assets: {} };
+                    }
+
+                    // Update user info
+                    document.getElementById('username').textContent = user.username || 'User';
+
+                    // Update balances
+                    const totalBalance = (window.nobleChain.formatCurrency) ? window.nobleChain.getTotalBalance() : 0;
+                    const dollarBalance = wallet.dollarBalance || 0;
+
+                    document.getElementById('totalBalance').textContent = window.nobleChain.formatCurrency ? window.nobleChain.formatCurrency(totalBalance) : '$0.00';
+                    document.getElementById('dollarBalance').textContent = window.nobleChain.formatCurrency ? window.nobleChain.formatCurrency(dollarBalance) : '$0.00';
+                } catch (err) {
+                    console.error('updateDashboard failed', err);
+                }
             }
 
             renderMarketAssets() {
@@ -308,25 +319,33 @@
                 const marketData = window.nobleChain && window.nobleChain.marketData ? window.nobleChain.marketData : {};
                 const formatCurrency = (amount, decimals = 2) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: decimals, maximumFractionDigits: decimals }).format(amount);
 
-                const renderFromData = (md) => container.innerHTML = Object.entries(md).slice(0, 8).map(([id, data]) => `
+                const renderFromData = (md) => container.innerHTML = Object.entries(md).slice(0, 8).map(([id, data]) => {
+                    const symbol = (data && (data.symbol || data.sym)) ? (data.symbol || data.sym) : String(id).toUpperCase();
+                    const symbolShort = (typeof symbol === 'string') ? symbol.substring(0, 2) : String(symbol).substring(0, 2);
+                    const name = data && data.name ? data.name : symbol;
+                    const price = data && typeof data.price === 'number' ? data.price : Number(data && data.currentPrice) || 0;
+                    const change = (data && typeof data.change === 'number') ? data.change : 0;
+
+                    return `
                     <div class="flex items-center justify-between bg-gray-50 p-4 rounded-2xl">
                         <div class="flex items-center space-x-3">
                             <div class="w-10 h-10 bg-black rounded-full flex items-center justify-center">
-                                <span class="text-white text-xs font-bold">${data.symbol.substring(0, 2)}</span>
+                                <span class="text-white text-xs font-bold">${symbolShort}</span>
                             </div>
                             <div>
-                                <div class="font-semibold text-sm">${data.name}</div>
-                                <div class="text-gray-500 text-xs">${data.symbol}</div>
+                                <div class="font-semibold text-sm">${name}</div>
+                                <div class="text-gray-500 text-xs">${symbol}</div>
                             </div>
                         </div>
                         <div class="text-right">
-                            <div class="font-semibold text-sm">${(window.nobleChain && window.nobleChain.formatCurrency) ? window.nobleChain.formatCurrency(data.price, 2) : formatCurrency(data.price,2)}</div>
-                            <div class="text-xs ${data.change >= 0 ? 'text-green-500' : 'text-red-500'}">
-                                ${data.change >= 0 ? '+' : ''}${(typeof data.change === 'number') ? data.change.toFixed(2) : '0.00'}%
+                            <div class="font-semibold text-sm">${(window.nobleChain && window.nobleChain.formatCurrency) ? window.nobleChain.formatCurrency(price, 2) : formatCurrency(price,2)}</div>
+                            <div class="text-xs ${change >= 0 ? 'text-green-500' : 'text-red-500'}">
+                                ${change >= 0 ? '+' : ''}${(typeof change === 'number') ? change.toFixed(2) : '0.00'}%
                             </div>
                         </div>
                     </div>
-                `).join('');
+                `;
+                }).join('');
                 
                 // If no marketData available from main app, fetch from CoinGecko
                 if (!marketData || Object.keys(marketData).length === 0) {
@@ -348,6 +367,7 @@
                 } else {
                     renderFromData(marketData);
                 }
+            }
 
             renderRecentTransactions() {
                 const container = document.getElementById('recentTransactions');
@@ -441,6 +461,7 @@
         }
 
         function showAddMoney() {
+            console.log('showAddMoney');
             showModal('Add Money', `
                 <div class="space-y-4">
                     <p class="text-gray-600 text-sm">To complete your deposit setup, please contact Noble Chain Support.</p>
@@ -456,6 +477,7 @@
         }
 
         function showSendMoney() {
+            console.log('showSendMoney');
             showModal('Send Money', `
                 <div class="space-y-4">
                     <div>
@@ -488,11 +510,13 @@
             }
 
             try {
+                if (!window.nobleChain || !window.nobleChain.sendMoney) throw new Error('sendMoney not available');
                 window.nobleChain.sendMoney(username, amount);
                 hideModal();
                 alert('Money sent successfully!');
             } catch (error) {
-                alert(error.message);
+                console.error('confirmSendMoney error', error);
+                alert(error.message || 'Failed to send money');
             }
         }
 
