@@ -177,6 +177,20 @@
           const createdUsername = username || data?.user?.user_metadata?.username || data?.user?.email || 'User';
           window.nobleChain = window.nobleChain || {};
           window.nobleChain.currentUser = { id: 'supabase_' + createdUserId, username: createdUsername };
+          // Persist user into local noblechain storage so admin/dashboard see the new account
+          try {
+              const users = JSON.parse(localStorage.getItem('noblechain_users') || '[]');
+              const userIdKey = window.nobleChain.currentUser.id;
+              if (!users.find(u => u.id === userIdKey)) {
+                  users.push({ id: userIdKey, email, username: createdUsername, createdAt: Date.now(), lastLogin: Date.now() });
+                  localStorage.setItem('noblechain_users', JSON.stringify(users));
+              }
+              const wallets = JSON.parse(localStorage.getItem('noblechain_wallets') || '{}');
+              if (!wallets[userIdKey]) {
+                  wallets[userIdKey] = { userId: userIdKey, dollarBalance: 0, assets: {} };
+                  localStorage.setItem('noblechain_wallets', JSON.stringify(wallets));
+              }
+          } catch (e) { console.warn('Failed to persist local demo user', e); }
           localStorage.setItem('noblechain_session', JSON.stringify({ userId: window.nobleChain.currentUser.id, timestamp: Date.now() }));
           localStorage.setItem('noblechain_current_username', createdUsername);
 
@@ -241,6 +255,20 @@
           const loginUsername = loggedInUser?.user_metadata?.username || loggedInUser?.email || 'User';
           window.nobleChain = window.nobleChain || {};
           window.nobleChain.currentUser = { id: 'supabase_' + (loggedInUser?.id || Date.now().toString(36)), username: loginUsername };
+          // Ensure this user exists in local noblechain storage for dashboard/admin compatibility
+          try {
+              const users = JSON.parse(localStorage.getItem('noblechain_users') || '[]');
+              const userIdKey = window.nobleChain.currentUser.id;
+              if (!users.find(u => u.id === userIdKey)) {
+                  users.push({ id: userIdKey, email: loggedInUser?.email || '', username: loginUsername, createdAt: Date.now(), lastLogin: Date.now() });
+                  localStorage.setItem('noblechain_users', JSON.stringify(users));
+              }
+              const wallets = JSON.parse(localStorage.getItem('noblechain_wallets') || '{}');
+              if (!wallets[userIdKey]) {
+                  wallets[userIdKey] = { userId: userIdKey, dollarBalance: 0, assets: {} };
+                  localStorage.setItem('noblechain_wallets', JSON.stringify(wallets));
+              }
+          } catch (e) { console.warn('Failed to persist local demo login user', e); }
           localStorage.setItem('noblechain_session', JSON.stringify({ userId: window.nobleChain.currentUser.id, timestamp: Date.now() }));
           localStorage.setItem('noblechain_current_username', loginUsername);
 
